@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+	<meta name="robots" content="max-image-preview:large">
+	<title>Acesso Secreto - Acesso Privado</title>
+	<link rel="preload" as="image" href="https://i.ibb.co/PGvnqLX8/b-EZD9-ezgif-com-optimize.webp">
+
+	<style>
+		:root{
+			--bg:#000000; --card:#ffffffd7; --text:#000000fd; --muted:#6b6363;
+			--accent:#229ED9; --shadow:0 8px 30px rgba(0,0,0,.08);
+			font-family:Inter, system-ui, -apple-system, sans-serif;
+		}
+		*{box-sizing:border-box; -webkit-touch-callout:none; -webkit-user-select:none; user-select:none;}
+		html,body{margin:0;background:var(--bg);color:var(--text); height: 100%;}
+		.wrap{max-width:420px;margin:0 auto;padding:18px;padding-top:60px; opacity:0; transition: opacity 0.4s;}
+		.card{position:relative;background:var(--card);border-radius:14px;padding:14px;box-shadow:var(--shadow);overflow:visible}
+		.guide-title{display:flex;align-items:center;justify-content:center;gap:8px;text-align:center;font-weight:700;font-size:17px;margin-bottom:10px;}
+		.arrow{font-size:22px;animation:bounce 1.2s infinite}
+		@keyframes bounce{0%,20%,50%,80%,100%{transform:translateY(0)}40%{transform:translateY(6px)}60%{transform:translateY(3px)}}
+		.visual img{width:100%;height:auto;display:block;border-radius:12px}
+		.steps{margin-top:12px;display:flex;flex-direction:column;gap:8px}
+		.step{display:flex;gap:8px}
+		.num{color:var(--accent);font-weight:800;min-width:22px}
+		.txt{color:var(--muted);font-size:15px}
+		.cta{margin-top:12px}
+		.btn{
+			width:100%;background:var(--accent);color:#fff;padding:14px;border:0;border-radius:12px;
+			font-weight:800;font-size:16px;cursor:pointer;box-shadow:0 12px 30px rgba(34,158,217,.18)
+		}
+		.btn-help{width:100%; background:#fff; color:#1f2937; padding:12px; border:2px solid rgba(34,158,217,.35); border-radius:12px; font-weight:800; margin-top:10px; cursor:pointer;}
+		.helpbox{display:none; margin-top:10px; padding:12px; border-radius:12px; background:rgba(34,158,217,.08); border:1px solid rgba(34,158,217,.22);}
+		.btn-copy{width:100%; background:#f8fafc; color:#0f172a; padding:12px; border-radius:12px; font-weight:800; border:1px dashed rgba(15,23,42,.35); cursor:pointer;}
+		.foot{margin-top:10px;text-align:center;color:var(--muted);font-size:12px}
+
+		/* Seletor Drop-up Inferior Direito */
+		.lang-selector{ position:fixed; bottom:15px; right:15px; z-index:1000; }
+		.lang-btn{ background:#fff; border:1px solid #eee; padding:8px 12px; border-radius:99px; font-weight:700; cursor:pointer; box-shadow:var(--shadow); display:flex; gap:6px; align-items:center;}
+		.lang-dropdown{ position:absolute; bottom:50px; right:0; background:#fff; border:1px solid #eee; border-radius:12px; display:none; flex-direction:column; min-width:130px; overflow:hidden; box-shadow:var(--shadow);}
+		.lang-dropdown.open{display:flex;}
+		.lang-opt{background:none; border:0; padding:10px; text-align:left; cursor:pointer; font-weight:600; font-size:13px; display:flex; gap:8px; width:100%;}
+		.lang-opt:hover{background:#f5f5f5;}
+	</style>
+</head>
+
+<body oncontextmenu="return false;">
+
+<div id="app-root">
+	<div class="lang-selector">
+		<button class="lang-btn" id="l-btn"><span>🇧🇷</span> PT ▴</button>
+		<div class="lang-dropdown" id="l-drop"></div>
+	</div>
+
+	<div class="wrap" id="main-wrap" style="opacity: 1;">
+		<div class="card">
+			<div class="guide-title"><span id="guide-text">SIGA O TUTORIAL ABAIXO</span><span class="arrow">👇</span></div>
+			<div class="visual"><img src="https://i.ibb.co/PGvnqLX8/b-EZD9-ezgif-com-optimize.webp" alt="Tutorial"></div>
+			<div class="steps" id="steps-container">
+				<div class="step"><div class="num">1)</div><div class="txt">Toque nos <strong>três pontinhos</strong> (canto superior direito da tela)</div></div>
+				<div class="step"><div class="num">2)</div><div class="txt">Escolha <strong>"Abrir no navegador"</strong></div></div>
+				<div class="step"><div class="num">3)</div><div class="txt">Agora toque no botão azul para abrir o Telegram</div></div>
+			</div>
+			<div class="cta"><button class="btn" id="openTelegram">ABRIR TELEGRAM</button></div>
+			<div class="cta">
+				<button class="btn-help" id="h-tgl">NÃO CONSIGO ABRIR</button>
+				<div class="helpbox" id="h-box">
+					<p style="font-size:14px; color:#6b6363">1) Toque no botão abaixo<br>2) Cole no seu navegador</p>
+					<button class="btn-copy" id="h-cpy">COPIAR LINK DO TELEGRAM</button>
+					<div id="h-hint" style="display:none; color:green; font-size:12px; margin-top:5px; text-align:center;">Copiado! ✅</div>
+				</div>
+			</div>
+			<div class="foot">Redirecionamento seguro • Nunca armazenamos dados pessoais.</div>
+		</div>
+	</div>
+</div>
+
+<script>
+(function(){
+	"use strict";
+
+	// ========================================
+	// PROTEÇÃO ANTI-INSPEÇÃO
+	// ========================================
+	const kickUser = () => { window.location.replace("https://www.google.com"); };
+	const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+	const isSocialApp = /TikTok|FBAN|FBAV|Instagram/i.test(navigator.userAgent);
+
+	if (!isMobile && !isSocialApp) {
+		const detectDevTools = () => {
+			const threshold = 160;
+			if (window.outerWidth - window.innerWidth > threshold || window.outerHeight - window.innerHeight > threshold) kickUser();
+		};
+		setInterval(detectDevTools, 1000);
+		document.onkeydown = (e) => {
+			if (e.keyCode == 123 || (e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 74 || e.keyCode == 67)) || (e.ctrlKey && e.keyCode == 85)) kickUser();
+		};
+	}
+
+	// ========================================
+	// DECODIFICADOR DE LINK BINÁRIO OFUSCADO
+	// ========================================
+	const _0x4f2a = "011010000111010001110100011100000111001100111010001011110010111101110100001011100110110101100101001011110010101101010111001101010110101001001110010001000101000101101011010100110100111001110001010101010111011101001110011010100110101101111000";
+
+	function _0x7b3d(bin) {
+		let dec = '';
+		for (let i = 0; i < bin.length; i += 8) {
+			dec += String.fromCharCode(parseInt(bin.substring(i, i + 8), 2));
+		}
+		return dec;
+	}
+
+	const telegramLink = _0x7b3d(_0x4f2a);
+
+	// ========================================
+	// CONFIGURAÇÃO DE IDIOMAS
+	// ========================================
+	const LANG_CONFIG = {
+		pt: { flag: '🇧🇷', name: 'PT' },
+		en: { flag: '🇺🇸', name: 'EN' },
+		es: { flag: '🇪🇸', name: 'ES' },
+		fr: { flag: '🇫🇷', name: 'FR' },
+		de: { flag: '🇩🇪', name: 'DE' },
+		pl: { flag: '🇵🇱', name: 'PL' }
+	};
+
+	const dict = {
+		pt:{
+			guide:'SIGA O TUTORIAL ABAIXO',
+			step1:'Toque nos <strong>três pontinhos</strong> (canto superior direito da tela)',
+			step2:'Escolha <strong>"Abrir no navegador"</strong>',
+			step3:'Agora toque no botão azul para abrir o Telegram',
+			cta:'ABRIR TELEGRAM',
+			help:'NÃO CONSIGO ABRIR',
+			copy:'COPIAR LINK DO TELEGRAM',
+			foot:'Redirecionamento seguro • Nunca armazenamos dados pessoais.'
+		},
+		en:{
+			guide:'FOLLOW THE TUTORIAL',
+			step1:'Tap the <strong>three dots</strong> (top-right of the screen)',
+			step2:'Choose <strong>"Open in browser"</strong>',
+			step3:'Now tap the blue button to open Telegram',
+			cta:'OPEN TELEGRAM',
+			help:'I CANNOT OPEN IT',
+			copy:'COPY TELEGRAM LINK',
+			foot:'Secure redirect • We do not store personal data.'
+		},
+		es:{
+			guide:'SIGA EL TUTORIAL',
+			step1:'Toca los <strong>tres puntos</strong> (arriba a la derecha)',
+			step2:'Elige <strong>"Abrir en el navegador"</strong>',
+			step3:'Toca el botón azul para abrir Telegram',
+			cta:'ABRIR TELEGRAM',
+			help:'NO PUEDO ABRIR',
+			copy:'COPIAR LINK',
+			foot:'Redirección segura.'
+		},
+		fr:{
+			guide:'SUIVEZ LE TUTORIEL',
+			step1:'Appuyez sur les <strong>trois points</strong> (en haut à droite)',
+			step2:'Choisissez <strong>"Ouvrir dans le navigateur"</strong>',
+			step3:'Appuyez sur le bouton bleu pour ouvrir Telegram',
+			cta:'OUVRIR TELEGRAM',
+			help:'JE NE PEUX PAS OUVRIR',
+			copy:'COPIER LE LIEN',
+			foot:'Redirection sécurisée.'
+		},
+		de:{
+			guide:'FOLGEN SIE DEM TUTORIAL',
+			step1:'Tippen Sie auf die <strong>drei Punkte</strong> (oben rechts)',
+			step2:'Wählen Sie <strong>"Im Browser öffnen"</strong>',
+			step3:'Tippen Sie auf die blaue Schaltfläche, um Telegram zu öffnen',
+			cta:'TELEGRAM ÖFFNEN',
+			help:'ICH KANN NICHT ÖFFNEN',
+			copy:'LINK KOPIEREN',
+			foot:'Sichere Weiterleitung.'
+		},
+		pl:{
+			guide:'POSTĘPUJ ZGODNIE Z SAMOUCZKIEM',
+			step1:'Dotknij <strong>trzech kropek</strong> (w prawym górnym rogu)',
+			step2:'Wybierz <strong>"Otwórz w przeglądarce"</strong>',
+			step3:'Teraz dotknij niebieskiego przycisku, aby otworzyć Telegram',
+			cta:'OTWÓRZ TELEGRAM',
+			help:'NIE MOGĘ OTWORZYĆ',
+			copy:'KOPIUJ LINK',
+			foot:'Bezpieczne przekierowanie.'
+		}
+	};
+
+	// ========================================
+	// FUNÇÃO DE RENDERIZAÇÃO
+	// ========================================
+	function render(lang) {
+		const t = dict[lang] || dict.en;
+		const currentConfig = LANG_CONFIG[lang] || LANG_CONFIG.en;
+
+		document.getElementById('app-root').innerHTML = `
+			<div class="lang-selector">
+				<button class="lang-btn" id="l-btn"><span>${currentConfig.flag}</span> ${currentConfig.name} ▴</button>
+				<div class="lang-dropdown" id="l-drop"></div>
+			</div>
+
+			<div class="wrap" id="main-wrap">
+				<div class="card">
+					<div class="guide-title"><span>${t.guide}</span><span class="arrow">👇</span></div>
+					<div class="visual"><img src="https://i.ibb.co/PGvnqLX8/b-EZD9-ezgif-com-optimize.webp" alt="Tutorial"></div>
+					<div class="steps">
+						<div class="step"><div class="num">1)</div><div class="txt">${t.step1}</div></div>
+						<div class="step"><div class="num">2)</div><div class="txt">${t.step2}</div></div>
+						<div class="step"><div class="num">3)</div><div class="txt">${t.step3}</div></div>
+					</div>
+					<div class="cta"><button class="btn" id="openTelegram">${t.cta}</button></div>
+					<div class="cta">
+						<button class="btn-help" id="h-tgl">${t.help}</button>
+						<div class="helpbox" id="h-box">
+							<p style="font-size:14px; color:#6b6363">1) Toque no botão abaixo<br>2) Cole no seu navegador</p>
+							<button class="btn-copy" id="h-cpy">${t.copy}</button>
+							<div id="h-hint" style="display:none; color:green; font-size:12px; margin-top:5px; text-align:center;">Copiado! ✅</div>
+						</div>
+					</div>
+					<div class="foot">${t.foot}</div>
+				</div>
+			</div>
+		`;
+
+		// Dropdown Logic
+		const dBtn = document.getElementById('l-btn');
+		const dMenu = document.getElementById('l-drop');
+		dBtn.onclick = (e) => { e.stopPropagation(); dMenu.classList.toggle('open'); };
+
+		Object.keys(LANG_CONFIG).forEach(c => {
+			const opt = document.createElement('button');
+			opt.className = 'lang-opt';
+			opt.innerHTML = `<span>${LANG_CONFIG[c].flag}</span> ${LANG_CONFIG[c].name}`;
+			opt.onclick = () => render(c);
+			dMenu.appendChild(opt);
+		});
+
+		// Event Listeners
+		document.getElementById('openTelegram').onclick = () => {
+			window.location.href = telegramLink;
+		};
+
+		document.getElementById('h-tgl').onclick = () => {
+			const box = document.getElementById('h-box');
+			box.style.display = (box.style.display === 'block') ? 'none' : 'block';
+		};
+
+		document.getElementById('h-cpy').onclick = async function() {
+			try {
+				await navigator.clipboard.writeText(telegramLink);
+				document.getElementById('h-hint').style.display = 'block';
+				setTimeout(() => document.getElementById('h-hint').style.display = 'none', 2000);
+			} catch (err) {
+				alert("Link: " + telegramLink);
+			}
+		};
+
+		setTimeout(() => document.getElementById('main-wrap').style.opacity = "1", 50);
+	}
+
+	// ========================================
+	// INICIALIZAÇÃO
+	// ========================================
+	const initLang = (new URLSearchParams(window.location.search).get('lang')) || (navigator.language.split('-')[0]) || 'en';
+	render(dict[initLang] ? initLang : 'en');
+
+	document.onclick = () => { 
+		const m = document.getElementById('l-drop'); 
+		if(m) m.classList.remove('open'); 
+	};
+})();
+</script>
+
+</body>
+</html>
