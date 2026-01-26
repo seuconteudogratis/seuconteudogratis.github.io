@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Links Ofuscados</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .result-box {
+            display: none;
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            border: 2px dashed #667eea;
+        }
+
+        .result-box.show {
+            display: block;
+        }
+
+        .result-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .code-output {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            overflow-x: auto;
+            margin-bottom: 10px;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .copy-btn {
+            background: #28a745;
+            margin-top: 10px;
+        }
+
+        .copy-btn:hover {
+            background: #218838;
+        }
+
+        .success-msg {
+            display: none;
+            color: #28a745;
+            font-weight: 600;
+            margin-top: 10px;
+            text-align: center;
+        }
+
+        .success-msg.show {
+            display: block;
+        }
+
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+            font-size: 13px;
+            color: #555;
+        }
+
+        .info-box strong {
+            color: #2196F3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔐 Gerador de Links Ofuscados</h1>
+        <p class="subtitle">Converta seu link do Telegram em código binário ofuscado</p>
+
+        <div class="input-group">
+            <label for="linkInput">Cole o link do Telegram:</label>
+            <input type="text" id="linkInput" placeholder="https://t.me/seu_canal" />
+        </div>
+
+        <button onclick="generateObfuscated()">🚀 Gerar Código Ofuscado</button>
+
+        <div class="result-box" id="resultBox">
+            <div class="result-label">✅ Código gerado com sucesso!</div>
+            <div class="code-output" id="binaryOutput"></div>
+            <button class="copy-btn" onclick="copyToClipboard()">📋 Copiar Código</button>
+            <div class="success-msg" id="successMsg">✅ Copiado!</div>
+        </div>
+
+        <div class="info-box">
+            <strong>📌 Como usar:</strong><br>
+            1. Cole seu link do Telegram acima<br>
+            2. Clique em "Gerar Código Ofuscado"<br>
+            3. Copie o código binário gerado<br>
+            4. Substitua o valor da variável <code>_0x4f2a</code> no seu HTML
+        </div>
+    </div>
+
+    <script>
+        function textToBinary(text) {
+            return text.split('').map(char => {
+                return char.charCodeAt(0).toString(2).padStart(8, '0');
+            }).join('');
+        }
+
+        function generateObfuscated() {
+            const input = document.getElementById('linkInput');
+            const link = input.value.trim();
+
+            if (!link) {
+                alert('❌ Por favor, cole um link válido!');
+                return;
+            }
+
+            if (!link.startsWith('http://') && !link.startsWith('https://')) {
+                alert('❌ O link deve começar com http:// ou https://');
+                return;
+            }
+
+            const binaryCode = textToBinary(link);
+            
+            document.getElementById('binaryOutput').textContent = `const _0x4f2a = "${binaryCode}";`;
+            document.getElementById('resultBox').classList.add('show');
+            document.getElementById('successMsg').classList.remove('show');
+        }
+
+        function copyToClipboard() {
+            const outputText = document.getElementById('binaryOutput').textContent;
+            
+            navigator.clipboard.writeText(outputText).then(() => {
+                const successMsg = document.getElementById('successMsg');
+                successMsg.classList.add('show');
+                
+                setTimeout(() => {
+                    successMsg.classList.remove('show');
+                }, 2000);
+            }).catch(err => {
+                alert('Erro ao copiar: ' + err);
+            });
+        }
+
+        document.getElementById('linkInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                generateObfuscated();
+            }
+        });
+    </script>
+</body>
+</html>
